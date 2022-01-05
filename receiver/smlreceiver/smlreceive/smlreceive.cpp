@@ -78,7 +78,7 @@ int main()
 			}
 			else
 			{
-				printf("Effective Power : %lf\n", power);
+				printf("Effective Power : %.1lf Watt\n", power);
 			}
 		}
 
