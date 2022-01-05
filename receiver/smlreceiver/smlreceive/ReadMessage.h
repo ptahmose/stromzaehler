@@ -6,7 +6,7 @@
 
 struct Message
 {
-	const std::uint8_t* data;
+	 std::uint8_t* data;
 	size_t				size;
 
 	std::uint16_t		GetCrc() const

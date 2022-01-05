@@ -58,6 +58,15 @@ int main()
 		uint16_t crc = calculate_crc(msg);
 
 		printf("crc: %04X (from msg: %04X) : %s\n", crc,msg.GetCrc(),(crc== msg.GetCrc())?"OK":"FAIL");
+		if (crc != msg.GetCrc())
+		{
+			*msg.data = 0x1b;
+			crc = calculate_crc(msg);
+			if (crc == msg.GetCrc())
+			{
+				printf("After correction -> OK\n");
+			}
+		}
 		for (size_t i = 0; i < msg.size; ++i)
 		{
 			printf("0x%02X",msg.data[i]);
