@@ -20,6 +20,7 @@ struct Message
 	}
 
 	bool	TryGetEffectivePower(std::uint32_t* power);
+	bool	TryGetEffectivePowerInWatts(double* power);
 };
 
 class CReadMessage

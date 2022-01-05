@@ -70,15 +70,15 @@ int main()
 
 		if (crc == msg.GetCrc())
 		{
-			uint32_t power;
-			bool b = msg.TryGetEffectivePower(&power);
+			double power;
+			bool b = msg.TryGetEffectivePowerInWatts(&power);
 			if (!b)
 			{
 				printf("Effective Power : <not present>");
 			}
 			else
 			{
-				printf("Effective Power : %u\n", power);
+				printf("Effective Power : %lf\n", power);
 			}
 		}
 

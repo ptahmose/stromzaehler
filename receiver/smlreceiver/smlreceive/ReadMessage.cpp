@@ -9,7 +9,7 @@
 
 using namespace std;
 
-	bool Message::TryGetEffectivePower(std::uint32_t* power)
+bool Message::TryGetEffectivePower(std::uint32_t* power)
 {
 	static const uint8_t pattern[] = { 0x77, 0x07, 0x01, 0x00, 0x10, 0x07, 0x00, 0xFF,
 										0x01,0x01,0x62,0x1B,0x52,0xff,0x55 };
@@ -28,6 +28,22 @@ using namespace std;
 	}
 
 	return true;
+}
+
+bool Message::TryGetEffectivePowerInWatts(double* power)
+{
+	uint32_t p;
+	if (this->TryGetEffectivePower(&p))
+	{
+		if (power != nullptr)
+		{
+			*power = p * 0.1;
+		}
+
+		return true;
+	}
+
+	return false;
 }
 
 CReadMessage::CReadMessage(const char* devName)
