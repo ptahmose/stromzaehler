@@ -58,6 +58,12 @@ int main()
 		uint16_t crc = calculate_crc(msg);
 
 		printf("crc: %04X (from msg: %02X %02X)\n", crc,(msg.data[msg.size-2]), (msg.data[msg.size - 1]));
+		for (size_t i = 0; i < msg.size; ++i)
+		{
+			printf("%02X".msg.data[msg.size]);
+		}
+
+		printf("\n");
 	}
 
 
