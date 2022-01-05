@@ -46,6 +46,46 @@ bool Message::TryGetEffectivePowerInWatts(double* power)
 	return false;
 }
 
+bool Message::TryGetTotalEnergy(std::uint64_t* energy)
+{
+	static const uint8_t pattern[] = {
+	0x77,		0x07,		0x01,		0x00,		0x01,		0x08,		0x00,		0xFF,		0x64,
+	0x00,		0x00,		0x82,		0x01,		0x62,		0x1E,		0x52,		0xFF,		0x56
+	};
+
+	const uint8_t* p = search(this->data, this->data + this->size, pattern, pattern + sizeof(pattern));
+	if (p == this->data + this->size)
+	{
+		return false;
+	}
+
+	p = p + sizeof(pattern);
+
+	uint64_t v = (((uint32_t)p[0]) << 24) | (((uint32_t)p[1]) << 16) | (((uint32_t)p[2]) << 8) | (((uint32_t)p[3]));
+	if (energy != nullptr)
+	{
+		*energy = v;
+	}
+
+	return true;
+}
+
+bool Message::TryGetTotalEnergyInWattHours(double* energy)
+{
+	uint64_t en;
+	if (this->TryGetTotalEnergy(&en))
+	{
+		if (energy != nullptr)
+		{
+			*energy = en * 0.1;
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
 CReadMessage::CReadMessage(const char* devName)
 {
 	this->fd = open(devName, O_RDWR | O_NOCTTY | O_SYNC);

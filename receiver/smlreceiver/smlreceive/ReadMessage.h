@@ -21,6 +21,8 @@ struct Message
 
 	bool	TryGetEffectivePower(std::uint32_t* power);
 	bool	TryGetEffectivePowerInWatts(double* power);
+	bool	TryGetTotalEnergy(std::uint64_t* energy);
+	bool	TryGetTotalEnergyInWattHours(double* energy);
 };
 
 class CReadMessage

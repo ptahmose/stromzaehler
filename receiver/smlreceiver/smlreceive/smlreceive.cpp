@@ -80,6 +80,17 @@ int main()
 			{
 				printf("Effective Power : %.1lf Watt\n", power);
 			}
+
+			double totalenergy;
+			b = msg.TryGetTotalEnergyInWattHours(&totalenergy);
+			if (!b)
+			{
+				printf("Total Energy: <not present>");
+			}
+			else
+			{
+				printf("Total Energy: %.1lf Watt*hour\n", totalenergy);
+			}
 		}
 
 		for (size_t i = 0; i < msg.size; ++i)
