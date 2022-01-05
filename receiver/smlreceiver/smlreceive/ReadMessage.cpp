@@ -4,6 +4,7 @@
 #include <termios.h>
 #include <string.h>
 #include <stdio.h>
+#include <cerrno>
 
 using namespace std;
 
