@@ -19,7 +19,7 @@ int main()
 		int n = read(fd, &c, 1);
 		if (n > 0)
 		{
-			printf("%i\n", c);
+			fputc(c, stdout);
 		}
 	}
 
