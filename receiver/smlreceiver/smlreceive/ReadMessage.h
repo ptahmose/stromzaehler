@@ -8,6 +8,16 @@ struct Message
 {
 	const std::uint8_t* data;
 	size_t				size;
+
+	std::uint16_t		GetCrc() const
+	{
+		if (size > 2)
+		{
+			return ((std::uint16_t)(this->data[this->size - 2]) << 8) | this->data[this->size - 1];
+		}
+
+		return 0;
+	}
 };
 
 class CReadMessage

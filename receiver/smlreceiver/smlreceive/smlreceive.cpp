@@ -57,7 +57,7 @@ int main()
 		int r = readMsg.ReadMessage(msg);
 		uint16_t crc = calculate_crc(msg);
 
-		printf("crc: %04X (from msg: %02X %02X)\n", crc,(msg.data[msg.size-2]), (msg.data[msg.size - 1]));
+		printf("crc: %04X (from msg: %04X %02X) : %s\n", crc,msg.GetCrc(),(crc== msg.GetCrc())?"OK":"FAIL");
 		for (size_t i = 0; i < msg.size; ++i)
 		{
 			printf("0x%02X",msg.data[i]);
