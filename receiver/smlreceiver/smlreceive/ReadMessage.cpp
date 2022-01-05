@@ -12,7 +12,7 @@ CReadMessage::CReadMessage(const char* devName)
 {
 	this->fd = open(devName, O_RDWR | O_NOCTTY | O_SYNC);
 	this->set_blocking(true);
-	this->buffer = unique_ptr<uint8_t, decltype(free)>(malloc(8192), free);
+	this->buffer = move(unique_ptr<uint8_t, decltype(free)>(malloc(8192), free));
 }
 
 
