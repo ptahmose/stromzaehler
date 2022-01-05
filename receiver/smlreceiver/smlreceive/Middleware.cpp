@@ -5,6 +5,7 @@
 #include <fcntl.h> 
 #include <unistd.h>
 #include <termios.h>
+#include <string.h>
 
 using namespace std;
 
