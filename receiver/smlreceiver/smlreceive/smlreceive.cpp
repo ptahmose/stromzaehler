@@ -78,7 +78,7 @@ int main()
 			}
 			else
 			{
-				printf("Effective Power : %u", power);
+				printf("Effective Power : %u\n", power);
 			}
 		}
 
