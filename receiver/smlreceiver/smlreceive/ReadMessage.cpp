@@ -21,6 +21,42 @@ CReadMessage::~CReadMessage()
 	free(this->buffer);
 }
 
+int
+CReadMessage::ReadMessage(Message& message)
+{
+	size_t bytesRead = 0;
+	for (;;)
+	{
+		uint8_t c;
+		int n = read(fd, &c, 1);
+		if (n <= 0)
+		{
+			printf("ERROR with read");
+		}
+
+		if (c == '\n' || c == '\r')
+		{
+			if (bytesRead == 0)
+			{
+				continue;
+			}
+
+			message.size = bytesRead;
+			message.data = this->buffer;
+			return 0;
+		}
+
+		this->buffer[bytesRead] = c;
+		++bytesRead;
+		if (bytesRead == this->maxBufferSize)
+		{
+			message.size = bytesRead;
+			message.data = this->buffer;
+			return 0;
+		}
+	}
+}
+
 void
 CReadMessage::set_blocking(bool should_block)
 {

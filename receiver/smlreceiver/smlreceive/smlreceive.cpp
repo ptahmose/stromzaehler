@@ -1,11 +1,12 @@
 ﻿// Middleware.cpp : Defines the entry point for the application.
 //
 
-#include "Middleware.h"
-#include <fcntl.h> 
-#include <unistd.h>
-#include <termios.h>
-#include <string.h>
+#include "smlreceive.h"
+//#include <fcntl.h> 
+//#include <unistd.h>
+//#include <termios.h>
+//#include <string.h>
+#include "ReadMessage.h"
 
 using namespace std;
 
@@ -32,6 +33,7 @@ set_blocking(int fd, bool should_block)
 
 int main()
 {
+	/*
 	//FILE* fp = fopen("/dev/ttyACM0", "rb");
 	int fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_SYNC);
 	set_blocking(fd, true);
@@ -43,6 +45,15 @@ int main()
 		{
 			fputc(c, stdout);
 		}
+	}
+	*/
+	CReadMessage readMsg("/dev/ttyACM0");
+	
+	for (;;)
+	{
+		Message msg;
+		int r = readMsg.ReadMessage(msg);
+		printf("Length: %i", msg.size);
 	}
 
 
