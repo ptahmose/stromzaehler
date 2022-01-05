@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
-#include <string.h>
+#include <cstdlib>
+#include <memory>
 
 struct Message
 {
@@ -12,7 +13,7 @@ class CReadMessage
 {
 private:
 	int fd;
-	std::unique_ptr<std::uint8_t,decltype(free)> buffer;
+	std::unique_ptr<std::uint8_t,decltype(std::free)> buffer;
 public:
 	CReadMessage(const char* devName);
 
