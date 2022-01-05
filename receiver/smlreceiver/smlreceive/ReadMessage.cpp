@@ -12,9 +12,14 @@ CReadMessage::CReadMessage(const char* devName)
 {
 	this->fd = open(devName, O_RDWR | O_NOCTTY | O_SYNC);
 	this->set_blocking(true);
-	this->buffer = move(unique_ptr<uint8_t, decltype(free)>(malloc(8192), free));
+	this->maxBufferSize = 8192;
+	this->buffer = (uint8_t*)malloc(this->maxBufferSize);
 }
 
+CReadMessage::~CReadMessage()
+{
+	free(this->buffer);
+}
 
 void
 CReadMessage::set_blocking(bool should_block)

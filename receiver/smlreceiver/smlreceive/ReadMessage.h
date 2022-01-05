@@ -14,9 +14,11 @@ class CReadMessage
 {
 private:
 	int fd;
-	std::unique_ptr<std::uint8_t,decltype(std::free)> buffer;
+	std::uint8_t* buffer;
+	size_t maxBufferSize;
 public:
 	CReadMessage(const char* devName);
+	~CReadMessage();
 
 	int ReadMessage(Message& message);
 private:
