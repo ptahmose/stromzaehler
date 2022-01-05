@@ -7,6 +7,7 @@
 //#include <termios.h>
 //#include <string.h>
 #include "ReadMessage.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -33,7 +34,7 @@ using namespace std;
 
 int main()
 {
-	printf("Helo World\n");
+	printf("Hello World\n");
 	/*
 	//FILE* fp = fopen("/dev/ttyACM0", "rb");
 	int fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_SYNC);
@@ -54,7 +55,9 @@ int main()
 	{
 		Message msg;
 		int r = readMsg.ReadMessage(msg);
-		printf("Length: %i\n", msg.size);
+		uint16_t crc = calculate_crc(msg);
+
+		printf("crc: %04X (from msg: %02X %02X)\n", crc,(msg.data[msg.size-2]), (msg.data[msg.size - 1]));
 	}
 
 
