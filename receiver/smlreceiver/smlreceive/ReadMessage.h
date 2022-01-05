@@ -18,6 +18,8 @@ struct Message
 
 		return 0;
 	}
+
+	bool	TryGetEffectivePower(std::uint32_t* power);
 };
 
 class CReadMessage

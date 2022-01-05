@@ -5,8 +5,30 @@
 #include <string.h>
 #include <stdio.h>
 #include <cerrno>
+#include <algorithm>
 
-using namespace std;
+using namespace std :
+
+	bool Message::TryGetEffectivePower(std::uint32_t* power)
+{
+	static const uint8_t pattern[] = { 0x77, 0x07, 0x01, 0x00, 0x10, 0x07, 0x00, 0xFF,
+										0x01,0x01,0x62,0x1B,0x52,0xff,0x55 };
+	const uint8_t* p = search(this->data, this->data + this->size, pattern, pattern + sizeof(pattern));
+	if (p == this->data + this->size)
+	{
+		return false;
+	}
+
+	p = p + sizeof(pattern);
+
+	uint32_t v = (((uint32_t)p[0]) << 24) | (((uint32_t)p[1]) << 16) | (((uint32_t)p[2]) << 8) | (((uint32_t)p[3]));
+	if (power != nullptr)
+	{
+		*power = v;
+	}
+
+	return true;
+}
 
 CReadMessage::CReadMessage(const char* devName)
 {

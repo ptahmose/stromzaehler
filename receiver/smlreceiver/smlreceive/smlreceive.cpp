@@ -67,6 +67,21 @@ int main()
 				printf("After correction -> OK\n");
 			}
 		}
+
+		if (crc == msg.GetCrc())
+		{
+			uint32_t power;
+			bool b = msg.TryGetEffectivePower(&power);
+			if (!b)
+			{
+				printf("Effective Power : <not present>");
+			}
+			else
+			{
+				printf("Effective Power : %u", power);
+			}
+		}
+
 		for (size_t i = 0; i < msg.size; ++i)
 		{
 			printf("0x%02X",msg.data[i]);
