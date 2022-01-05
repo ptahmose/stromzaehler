@@ -1,7 +1,8 @@
 #pragma once
+#include <memory>
 #include <cstdint>
 #include <cstdlib>
-#include <memory>
+
 
 struct Message
 {
