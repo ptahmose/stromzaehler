@@ -31,7 +31,7 @@ CReadMessage::ReadMessage(Message& message)
 		int n = read(fd, &c, 1);
 		if (n <= 0)
 		{
-			printf("ERROR with read");
+			printf("ERROR with read\n");
 		}
 
 		if (c == '\n' || c == '\r')
@@ -64,7 +64,7 @@ CReadMessage::set_blocking(bool should_block)
 	memset(&tty, 0, sizeof tty);
 	if (tcgetattr(this->fd, &tty) != 0)
 	{
-		fprintf(stderr, "error %d from tggetattr", errno);
+		fprintf(stderr, "error %d from tggetattr\n", errno);
 		return;
 	}
 
@@ -73,6 +73,6 @@ CReadMessage::set_blocking(bool should_block)
 
 	if (tcsetattr(this->fd, TCSANOW, &tty) != 0)
 	{
-		fprintf(stderr, "error %d setting term attributes", errno);
+		fprintf(stderr, "error %d setting term attributes\n", errno);
 	}
 }

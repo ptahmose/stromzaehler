@@ -33,6 +33,7 @@ using namespace std;
 
 int main()
 {
+	printf("Helo World\n");
 	/*
 	//FILE* fp = fopen("/dev/ttyACM0", "rb");
 	int fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_SYNC);
@@ -53,7 +54,7 @@ int main()
 	{
 		Message msg;
 		int r = readMsg.ReadMessage(msg);
-		printf("Length: %i", msg.size);
+		printf("Length: %i\n", msg.size);
 	}
 
 
