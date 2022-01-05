@@ -15,6 +15,7 @@ class CReadMessage
 private:
 	int fd;
 	std::uint8_t* buffer;
+	std::uint8_t* rawBuffer;
 	size_t maxBufferSize;
 public:
 	CReadMessage(const char* devName);
@@ -23,4 +24,5 @@ public:
 	int ReadMessage(Message& message);
 private:
 	void set_blocking(bool should_block);
+	Message ConvertBufferToRawBuffer(size_t size);
 };

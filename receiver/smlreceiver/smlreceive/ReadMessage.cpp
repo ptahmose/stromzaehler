@@ -14,11 +14,13 @@ CReadMessage::CReadMessage(const char* devName)
 	this->set_blocking(true);
 	this->maxBufferSize = 8192;
 	this->buffer = (uint8_t*)malloc(this->maxBufferSize);
+	this->rawBuffer = (uint8_t*)malloc(this->maxBufferSize / 2);
 }
 
 CReadMessage::~CReadMessage()
 {
 	free(this->buffer);
+	free(this->rawBuffer);
 }
 
 int
@@ -41,8 +43,9 @@ CReadMessage::ReadMessage(Message& message)
 				continue;
 			}
 
-			message.size = bytesRead;
-			message.data = this->buffer;
+			message = this->ConvertBufferToRawBuffer(bytesRead);
+			//message.size = bytesRead;
+			//message.data = this->buffer;
 			return 0;
 		}
 
@@ -50,8 +53,9 @@ CReadMessage::ReadMessage(Message& message)
 		++bytesRead;
 		if (bytesRead == this->maxBufferSize)
 		{
-			message.size = bytesRead;
-			message.data = this->buffer;
+			message = this->ConvertBufferToRawBuffer(bytesRead);
+			/*message.size = bytesRead;
+			message.data = this->buffer;*/
 			return 0;
 		}
 	}
@@ -75,4 +79,46 @@ CReadMessage::set_blocking(bool should_block)
 	{
 		fprintf(stderr, "error %d setting term attributes\n", errno);
 	}
+}
+
+std::uint8_t HexToVal(char c)
+{
+	switch (c)
+	{
+	case '0':return 0;
+	case '1':return 1;
+	case '2':return 2;
+	case '3':return 3;
+	case '4':return 4;
+	case '5':return 5;
+	case '6':return 6;
+	case '7':return 7;
+	case '8':return 8;
+	case '9':return 9;
+
+	case 'a':case 'A':return 10;
+	case 'b':case 'B':return 11;
+	case 'c':case 'C':return 12;
+	case 'd':case 'D':return 13;
+	case 'e':case 'E':return 14;
+	case 'f':case 'F':return 15;
+	}
+
+	return 0;
+}
+
+Message
+CReadMessage::ConvertBufferToRawBuffer(size_t size)
+{
+	for (size_t i = 0; i < size / 2; ++i)
+	{
+		char c1 = HexToVal((char)*(this->buffer + i * 2));
+		char c2 = HexToVal((char)*(this->buffer + i * 2 + 1));
+		this->rawBuffer[i] = c1 * 16 + c2;
+	}
+
+	Message msg;
+	msg.data = this->rawBuffer;
+	msg.size = size / 2;
+	return msg;
 }
