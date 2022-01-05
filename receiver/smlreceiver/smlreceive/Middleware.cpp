@@ -14,7 +14,7 @@ int main()
 		int c = fgetc(fp);
 		if (c != EOF)
 		{
-			fputc(c, stdout);
+			printf("%i", c);
 		}
 	}
 
