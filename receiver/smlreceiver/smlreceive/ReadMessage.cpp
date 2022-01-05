@@ -7,7 +7,7 @@
 #include <cerrno>
 #include <algorithm>
 
-using namespace std :
+using namespace std;
 
 	bool Message::TryGetEffectivePower(std::uint32_t* power)
 {
