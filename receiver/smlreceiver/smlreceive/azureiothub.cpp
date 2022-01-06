@@ -13,46 +13,48 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+volatile static bool messagePending = false;
+
 static char* get_device_id(const char* str)
 {
-    const char* substr = strstr(str, "DeviceId=");
+	const char* substr = strstr(str, "DeviceId=");
 
-    if (substr == NULL)
-        return NULL;
+	if (substr == NULL)
+		return NULL;
 
-    // skip "DeviceId="
-    substr += 9;
+	// skip "DeviceId="
+	substr += 9;
 
-    const char* semicolon = strstr(substr, ";");
-    int length = semicolon == NULL ? strlen(substr) : semicolon - substr;
-    char* device_id = (char*)calloc(1, length + 1);
-    memcpy(device_id, substr, length);
-    device_id[length] = '\0';
+	const char* semicolon = strstr(substr, ";");
+	int length = semicolon == NULL ? strlen(substr) : semicolon - substr;
+	char* device_id = (char*)calloc(1, length + 1);
+	memcpy(device_id, substr, length);
+	device_id[length] = '\0';
 
-    return device_id;
+	return device_id;
 }
 
 char* parse_iothub_name(const char* connectionString)
 {
-    if (connectionString == NULL)
-    {
-        return NULL;
-    }
+	if (connectionString == NULL)
+	{
+		return NULL;
+	}
 
-    char* cs = strdup(connectionString);
+	char* cs = strdup(connectionString);
 
-    char* hostName = strtok(cs, ".");
-    int prefixLen = strlen("HostName=");
-    int len = strlen(hostName) - prefixLen + 1;
-    char* iotHubName = (char*)malloc(len);
-    if (iotHubName == NULL)
-    {
-        return NULL;
-    }
-    memcpy(iotHubName, hostName + prefixLen, len - 1);
-    iotHubName[len - 1] = '\0';
-    free(cs);
-    return iotHubName;
+	char* hostName = strtok(cs, ".");
+	int prefixLen = strlen("HostName=");
+	int len = strlen(hostName) - prefixLen + 1;
+	char* iotHubName = (char*)malloc(len);
+	if (iotHubName == NULL)
+	{
+		return NULL;
+	}
+	memcpy(iotHubName, hostName + prefixLen, len - 1);
+	iotHubName[len - 1] = '\0';
+	free(cs);
+	return iotHubName;
 }
 
 
@@ -83,157 +85,223 @@ static int interval = INTERVAL;
 
 static void start()
 {
-    //sendingMessage = true;
-    printf("*** START ***\n");
+	//sendingMessage = true;
+	printf("*** START ***\n");
 }
 
 static void stop()
 {
-    //sendingMessage = false;
-    printf("*** STOP ***\n");
+	//sendingMessage = false;
+	printf("*** STOP ***\n");
 }
 
 int deviceMethodCallback(
-    const char* methodName,
-    const unsigned char* payload,
-    size_t size,
-    unsigned char** response,
-    size_t* response_size,
-    void* userContextCallback)
+	const char* methodName,
+	const unsigned char* payload,
+	size_t size,
+	unsigned char** response,
+	size_t* response_size,
+	void* userContextCallback)
 {
-    printf("Try to invoke method %s\r\n", methodName);
-    const char* responseMessage = onSuccess;
-    int result = 200;
+	printf("Try to invoke method %s\r\n", methodName);
+	const char* responseMessage = onSuccess;
+	int result = 200;
 
-    if (strcmp(methodName, "start") == 0)
-    {
-        start();
-    }
-    else if (strcmp(methodName, "stop") == 0)
-    {
-        stop();
-    }
-    else
-    {
-        printf("No method %s found\r\n", methodName);
-        responseMessage = notFound;
-        result = 404;
-    }
+	if (strcmp(methodName, "start") == 0)
+	{
+		start();
+	}
+	else if (strcmp(methodName, "stop") == 0)
+	{
+		stop();
+	}
+	else
+	{
+		printf("No method %s found\r\n", methodName);
+		responseMessage = notFound;
+		result = 404;
+	}
 
-    *response_size = strlen(responseMessage);
-    *response = (unsigned char*)malloc(*response_size);
-    strncpy((char*)(*response), responseMessage, *response_size);
+	*response_size = strlen(responseMessage);
+	*response = (unsigned char*)malloc(*response_size);
+	strncpy((char*)(*response), responseMessage, *response_size);
 
-    return result;
+	return result;
 }
 
 void twinCallback(
-    DEVICE_TWIN_UPDATE_STATE updateState,
-    const unsigned char* payLoad,
-    size_t size,
-    void* userContextCallback)
+	DEVICE_TWIN_UPDATE_STATE updateState,
+	const unsigned char* payLoad,
+	size_t size,
+	void* userContextCallback)
 {
-    char* temp = (char*)malloc(size + 1);
-    for (int i = 0; i < size; i++)
-    {
-        temp[i] = (char)(payLoad[i]);
-    }
-    temp[size] = '\0';
-    MULTITREE_HANDLE tree = NULL;
+	char* temp = (char*)malloc(size + 1);
+	for (int i = 0; i < size; i++)
+	{
+		temp[i] = (char)(payLoad[i]);
+	}
+	temp[size] = '\0';
+	MULTITREE_HANDLE tree = NULL;
 
-    if (JSON_DECODER_OK == JSONDecoder_JSON_To_MultiTree(temp, &tree))
-    {
-        MULTITREE_HANDLE child = NULL;
+	if (JSON_DECODER_OK == JSONDecoder_JSON_To_MultiTree(temp, &tree))
+	{
+		MULTITREE_HANDLE child = NULL;
 
-        if (MULTITREE_OK != MultiTree_GetChildByName(tree, "desired", &child))
-        {
-            LogInfo("This device twin message contains desired message only");
-            child = tree;
-        }
-        const void* value = NULL;
-        if (MULTITREE_OK == MultiTree_GetLeafValue(child, "interval", &value))
-        {
-            interval = atoi((const char*)value);
-        }
-    }
-    MultiTree_Destroy(tree);
-    free(temp);
+		if (MULTITREE_OK != MultiTree_GetChildByName(tree, "desired", &child))
+		{
+			LogInfo("This device twin message contains desired message only");
+			child = tree;
+		}
+		const void* value = NULL;
+		if (MULTITREE_OK == MultiTree_GetLeafValue(child, "interval", &value))
+		{
+			interval = atoi((const char*)value);
+		}
+	}
+	MultiTree_Destroy(tree);
+	free(temp);
 }
 
 IOTHUBMESSAGE_DISPOSITION_RESULT receiveMessageCallback(IOTHUB_MESSAGE_HANDLE message, void* userContextCallback)
 {
-    const unsigned char* buffer = NULL;
-    size_t size = 0;
+	const unsigned char* buffer = NULL;
+	size_t size = 0;
 
-    if (IOTHUB_MESSAGE_OK != IoTHubMessage_GetByteArray(message, &buffer, &size))
-    {
-        return IOTHUBMESSAGE_ABANDONED;
-    }
+	if (IOTHUB_MESSAGE_OK != IoTHubMessage_GetByteArray(message, &buffer, &size))
+	{
+		return IOTHUBMESSAGE_ABANDONED;
+	}
 
-    // message needs to be converted to zero terminated string
-    char* temp = (char*)malloc(size + 1);
+	// message needs to be converted to zero terminated string
+	char* temp = (char*)malloc(size + 1);
 
-    if (temp == NULL)
-    {
-        return IOTHUBMESSAGE_ABANDONED;
-    }
+	if (temp == NULL)
+	{
+		return IOTHUBMESSAGE_ABANDONED;
+	}
 
-    strncpy(temp, (const char*)buffer, size);
-    temp[size] = '\0';
+	strncpy(temp, (const char*)buffer, size);
+	temp[size] = '\0';
 
-    (void)printf("Receiving message: %s\r\n", temp);
-    free(temp);
+	(void)printf("Receiving message: %s\r\n", temp);
+	free(temp);
 
-    return IOTHUBMESSAGE_ACCEPTED;
+	return IOTHUBMESSAGE_ACCEPTED;
 }
+
+static void sendCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* userContextCallback)
+{
+	if (IOTHUB_CLIENT_CONFIRMATION_OK == result)
+	{
+		//blinkLED();
+	}
+	else
+	{
+		fprintf(stderr, "Failed to send message to Azure IoT Hub");
+	}
+
+	messagePending = false;
+}
+
+static void sendMessages(IOTHUB_CLIENT_LL_HANDLE iotHubClientHandle, char* buffer)
+{
+	IOTHUB_MESSAGE_HANDLE messageHandle = IoTHubMessage_CreateFromByteArray(buffer, strlen(buffer));
+	if (messageHandle == NULL)
+	{
+		fprintf(stderr, "Unable to create a new IoTHubMessage\n");
+	}
+	else
+	{
+		MAP_HANDLE properties = IoTHubMessage_Properties(messageHandle);
+		//Map_Add(properties, "temperatureAlert", (temperatureAlert > 0) ? "true" : "false");
+		fprintf(stdout, "Sending message: %s\n", buffer);
+		if (IoTHubClient_LL_SendEventAsync(iotHubClientHandle, messageHandle, sendCallback, NULL) != IOTHUB_CLIENT_OK)
+		{
+			fprintf(stderr, "Failed to send message to Azure IoT Hub\n");
+		}
+		else
+		{
+			messagePending = true;
+			fprintf(stdout, "Message sent to Azure IoT Hub\n");
+		}
+
+		IoTHubMessage_Destroy(messageHandle);
+	}
+}
+
 
 
 CAzureIot::CAzureIot(const std::string& connectionString)
 {
-    char device_id[257];
-    char* device_id_src = get_device_id(connectionString.c_str());
+	char device_id[257];
+	char* device_id_src = get_device_id(connectionString.c_str());
 
-    if (device_id_src == NULL)
-    {
-        fprintf(stderr,"invalid connection string");
-        exit(1);
-    }
+	if (device_id_src == NULL)
+	{
+		fprintf(stderr, "invalid connection string");
+		exit(1);
+	}
 
-    snprintf(device_id, sizeof(device_id), "%s", device_id_src);
-    free(device_id_src);
+	snprintf(device_id, sizeof(device_id), "%s", device_id_src);
+	free(device_id_src);
 
-    this->connectionstring = connectionString;
+	this->connectionstring = connectionString;
 }
 
-void CAzureIot::Run()
+void CAzureIot::Run(std::function<bool(int, std::string&)> getMessage)
 {
-    IOTHUB_CLIENT_LL_HANDLE iotHubClientHandle;
+	IOTHUB_CLIENT_LL_HANDLE iotHubClientHandle;
 
-    if (platform_init() != 0)
-    {
-        fprintf(stderr,"Failed to initialize the platform.\n");
-        exit(1);
-    }
-    else
-    {
-        if ((iotHubClientHandle = IoTHubClient_LL_CreateFromConnectionString(this->connectionstring.c_str(), MQTT_Protocol)) == NULL)
-        {
-            fprintf(stderr, "iotHubClientHandle is NULL!\n");
-            exit(1);// send_telemetry_data(NULL, EVENT_FAILED, "Cannot create iotHubClientHandle");
-        }
-        else
-        {
-            // set C2D and device method callback
-            IoTHubClient_LL_SetMessageCallback(iotHubClientHandle, receiveMessageCallback, NULL);
-            IoTHubClient_LL_SetDeviceMethodCallback(iotHubClientHandle, deviceMethodCallback, NULL);
-            IoTHubClient_LL_SetDeviceTwinCallback(iotHubClientHandle, twinCallback, NULL);
+	if (platform_init() != 0)
+	{
+		fprintf(stderr, "Failed to initialize the platform.\n");
+		exit(1);
+	}
+	else
+	{
+		if ((iotHubClientHandle = IoTHubClient_LL_CreateFromConnectionString(this->connectionstring.c_str(), MQTT_Protocol)) == NULL)
+		{
+			fprintf(stderr, "iotHubClientHandle is NULL!\n");
+			exit(1);// send_telemetry_data(NULL, EVENT_FAILED, "Cannot create iotHubClientHandle");
+		}
+		else
+		{
+			// set C2D and device method callback
+			IoTHubClient_LL_SetMessageCallback(iotHubClientHandle, receiveMessageCallback, NULL);
+			IoTHubClient_LL_SetDeviceMethodCallback(iotHubClientHandle, deviceMethodCallback, NULL);
+			IoTHubClient_LL_SetDeviceTwinCallback(iotHubClientHandle, twinCallback, NULL);
 
-            IoTHubClient_LL_SetOption(iotHubClientHandle, "product_info", "HappyPath_RaspberryPi-C");
+			IoTHubClient_LL_SetOption(iotHubClientHandle, "product_info", "HappyPath_RaspberryPi-C");
 
-            char* iotHubName = parse_iothub_name(this->connectionstring.c_str());
-            //send_telemetry_data_multi_thread(iotHubName, EVENT_SUCCESS, "IoT hub connection is established");
-            int count = 0;
+			char* iotHubName = parse_iothub_name(this->connectionstring.c_str());
+			//send_telemetry_data_multi_thread(iotHubName, EVENT_SUCCESS, "IoT hub connection is established");
+			int count = 0;
 
-        }
-    }
+			std::string buffer;
+			while (true)
+			{
+				if (!messagePending)
+				{
+					++count;
+					bool result = getMessage(count, buffer);
+					if (result != -1)
+					{
+						sendMessages(iotHubClientHandle, &buffer[0]);
+					}
+					else
+					{
+						fprintf(stderr,"Failed to read message");
+					}
+
+					//delay(interval);
+				}
+
+				IoTHubClient_LL_DoWork(iotHubClientHandle);
+			}
+
+			IoTHubClient_LL_Destroy(iotHubClientHandle);
+		}
+
+		platform_deinit();
+	}
 }

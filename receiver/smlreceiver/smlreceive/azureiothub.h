@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <functional>
 
 class CAzureIot
 {
@@ -10,5 +11,5 @@ private:
 public:
 	CAzureIot(const std::string& connectionString);
 
-	void Run();
+	void Run(std::function<bool(int, std::string&)> getMessage);
 };
