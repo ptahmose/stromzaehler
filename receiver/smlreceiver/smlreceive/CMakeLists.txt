@@ -7,6 +7,6 @@ cmake_minimum_required (VERSION 3.8)
 add_executable (Middleware "smlreceive.cpp" "smlreceive.h" "ReadMessage.h" "ReadMessage.cpp" "utils.h" "utils.cpp" "azureiothub.cpp" "azureiothub.h")
 
 # TODO: Add tests and install targets if needed.
-target_include_directories(Middleware "/usr/local/include/azureiot"
+target_include_directories(Middleware PRIVATE "/usr/local/include/azureiot"
                     "/usr/local/include/azureiot/inc/")
                     
