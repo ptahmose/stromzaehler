@@ -65,21 +65,21 @@ static const char* EVENT_FAILED = "failed";
 
 static int interval = INTERVAL;
 
-void* send_telemetry_data_multi_thread(char* iotHubName, const char* eventName, const char* message)
-{
-    AIParams* params = (AIParams*)malloc(sizeof(AIParams));
-    if (params != NULL)
-    {
-        params->iotHubName = iotHubName;
-        params->event = eventName;
-        params->message = message;
-        pthread_create(&thread, NULL, send_ai, (void*)params);
-    }
-    else
-    {
-        free(iotHubName);
-    }
-}
+//void* send_telemetry_data_multi_thread(char* iotHubName, const char* eventName, const char* message)
+//{
+//    AIParams* params = (AIParams*)malloc(sizeof(AIParams));
+//    if (params != NULL)
+//    {
+//        params->iotHubName = iotHubName;
+//        params->event = eventName;
+//        params->message = message;
+//        pthread_create(&thread, NULL, send_ai, (void*)params);
+//    }
+//    else
+//    {
+//        free(iotHubName);
+//    }
+//}
 
 static void start()
 {
@@ -231,7 +231,7 @@ void CAzureIot::Run()
             IoTHubClient_LL_SetOption(iotHubClientHandle, "product_info", "HappyPath_RaspberryPi-C");
 
             char* iotHubName = parse_iothub_name(this->connectionstring.c_str());
-            send_telemetry_data_multi_thread(iotHubName, EVENT_SUCCESS, "IoT hub connection is established");
+            //send_telemetry_data_multi_thread(iotHubName, EVENT_SUCCESS, "IoT hub connection is established");
             int count = 0;
 
         }
