@@ -153,10 +153,10 @@ void twinCallback(
 			child = tree;
 		}
 		const void* value = NULL;
-		if (MULTITREE_OK == MultiTree_GetLeafValue(child, "interval", &value))
+		/*if (MULTITREE_OK == MultiTree_GetLeafValue(child, "interval", &value))
 		{
 			interval = atoi((const char*)value);
-		}
+		}*/
 	}
 	MultiTree_Destroy(tree);
 	free(temp);
@@ -269,7 +269,7 @@ void CAzureIot::Run(std::function<bool(int, std::string&)> getMessage)
 			// set C2D and device method callback
 			IoTHubClient_LL_SetMessageCallback(iotHubClientHandle, receiveMessageCallback, NULL);
 			IoTHubClient_LL_SetDeviceMethodCallback(iotHubClientHandle, deviceMethodCallback, NULL);
-			//IoTHubClient_LL_SetDeviceTwinCallback(iotHubClientHandle, twinCallback, NULL);
+			IoTHubClient_LL_SetDeviceTwinCallback(iotHubClientHandle, twinCallback, NULL);
 
 			IoTHubClient_LL_SetOption(iotHubClientHandle, "product_info", "HappyPath_RaspberryPi-C");
 
