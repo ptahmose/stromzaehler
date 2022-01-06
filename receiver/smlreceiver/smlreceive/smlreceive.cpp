@@ -11,6 +11,16 @@
 
 using namespace std;
 
+static void WriteValues(double power, double totalenergy)
+{
+	FILE* fp = fopen("/tmp/stromzaehler.txt", "wb");
+	if (fp != NULL)
+	{
+		fprintf(fp, "{\"WP_Pges\": %lf,\"WP_Wges\": %lf}", power, totalenergy / 1000);
+		fclose(fp);
+	}
+}
+
 
 //void
 //set_blocking(int fd, bool should_block)
@@ -71,8 +81,8 @@ int main()
 		if (crc == msg.GetCrc())
 		{
 			double power;
-			bool b = msg.TryGetEffectivePowerInWatts(&power);
-			if (!b)
+			bool bPowerOk = msg.TryGetEffectivePowerInWatts(&power);
+			if (!bPowerOk)
 			{
 				printf("Effective Power : <not present>");
 			}
@@ -82,14 +92,19 @@ int main()
 			}
 
 			double totalenergy;
-			b = msg.TryGetTotalEnergyInWattHours(&totalenergy);
-			if (!b)
+			bool bTotalEnergyOk = msg.TryGetTotalEnergyInWattHours(&totalenergy);
+			if (!bTotalEnergyOk)
 			{
 				printf("Total Energy: <not present>");
 			}
 			else
 			{
 				printf("Total Energy: %.1lf Watt*hour\n", totalenergy);
+			}
+
+			if (bTotalEnergyOk == true && bPowerOk)
+			{
+				WriteValues(power, totalenergy);
 			}
 		}
 

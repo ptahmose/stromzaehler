@@ -1,0 +1,12 @@
+body {margin: 0 auto; font-size:18px; line-height:22px; font-family: Dosis, verdana, comic sans ms, Arial; background-color: #707070; color: #000000}
+
+h1 {font-size:25px; margin:5px 0}
+h2 {font-size:14px}
+h3 {font-size:14px}
+h4 {font-size:10px}
+
+@font-face {font-family: 'myFirstFont';	src: url('./7segment.woff') format('woff')}
+.segfontbk {display: inline; font-family: myFirstFont; font-size:40px}
+.komma {display: inline; font-size:40px}
+@font-face {font-family: 'Dosis'; font-style: normal; font-weight: 400; src: url('./dosis-v7-latin-regular.woff') format('woff')}
+#text_body {padding:5px; background-color: #FFFFFF; border-radius: 10px}

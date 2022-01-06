@@ -1,3 +1,6 @@
 <?php
-echo "{\"WP_Pges\": 1705,\"WP_Wges\": 1234}";
+$myfile = fopen("/tmp/stromzaehler.txt", "r") or die("Unable to open file!");
+echo fgets($myfile);
+fclose($myfile);
+// echo "{\"WP_Pges\": 1705,\"WP_Wges\": 1234.5678}";
 ?>
