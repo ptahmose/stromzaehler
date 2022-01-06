@@ -8,6 +8,7 @@
 //#include <string.h>
 #include "ReadMessage.h"
 #include "utils.h"
+#include <sys/file.h>
 
 using namespace std;
 
