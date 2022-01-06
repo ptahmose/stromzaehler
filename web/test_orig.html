@@ -2,9 +2,9 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<meta name="Author" content="J. Bohl">
-		<meta name="DESCRIPTION" content="Stromzähler">
-		<meta name="PAGE-CONTENT" content="Verbrauchswerte">
+		<meta name="Author" content="Stefan Weigert">
+		<meta name="DESCRIPTION" content="SML Testseite">
+		<meta name="PAGE-CONTENT" content="Elektronik">
 		<meta name="lang" content="de">
 		<meta name="ROBOTS" content="INDEX,FOLLOW">
 		<meta name="REVISIT-AFTER" content="60 days">
@@ -19,11 +19,11 @@
 	<body>
 		<div id="text_body">
 			
-				<div style=" background-color: #FFFFFF; float: none">
+				<div style="width: 296px; background-color: #FFFFFF; float: none">
 					<div style="height: 40px">
 						<center><h1>Ossiacher Str. 22</h1></center>
 					</div>
-					<div id="container-WP_Pges" style="height: 100%"></div>
+					<div id="container-WP_Pges" style="height: 200px"></div>
 					<div style="height: 175px;"></div>
 					<div id="container-WP_Wges" style="height: 30px; padding: 10px">
 						<script type="text/javascript">
@@ -112,6 +112,49 @@
  
 				// JSON abholen
 				setInterval(function () {
+					/*$.ajax({
+						type: "GET",
+						url: "/get_AB_json.py",
+ 
+						// error: function() { 
+						//	alert("Script konnte nicht ausgefÃ¼hrt werden");
+						//}, 
+ 
+						success: function(data, status){
+							var response = JSON.parse(data);
+							var point,
+							newVal,
+							inc;
+ 
+							if (chartAB_Pges) {
+								point = chartAB_Pges.series[0].points[0];		
+								newVal = response.AB_Pges;
+								point.update(newVal);
+							}
+ 
+							if (chartAB_PL1) {
+								point = chartAB_PL1.series[0].points[0];
+								newVal = response.AB_PL1;
+								point.update(newVal);
+							}
+ 
+							if (chartAB_PL2) {
+								point = chartAB_PL2.series[0].points[0];
+								newVal = response.AB_PL2;
+								point.update(newVal);
+							}
+ 
+							if (chartAB_PL3) {
+								point = chartAB_PL3.series[0].points[0];
+								newVal = response.AB_PL3;
+								point.update(newVal);
+							}
+ 
+							AB_Wges = (response.AB_Wges).toFixed(4);
+							str_AB_Wges = ('<center><div class="segfontbk">' + AB_Wges.split(".")[0] + '<\/div><div class="komma">,<\/div><div class="segfontbk">' + AB_Wges.split(".")[1] + '<\/div>kWh<\/center>');
+							document.getElementById("container-AB_Wges").innerHTML = str_AB_Wges;
+						}
+					});*/
 					$.ajax({
 						type: "GET",
 						url: "./get_WP_json.php",
