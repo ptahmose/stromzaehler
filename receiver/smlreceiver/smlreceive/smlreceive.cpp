@@ -14,7 +14,7 @@ using namespace std;
 static void WriteValues(double power, double totalenergy)
 {
 	//FILE* fp = fopen("/tmp/stromzaehler.txt", "wb");
-	FILE* fp = fopen("/mnt/zaehlerdata/stromzaehler.txt", "wb");
+	FILE* fp = fopen("/mnt/RAMDisk/zaehlerdata/stromzaehler.txt", "wb");
 	if (fp != NULL)
 	{
 		fprintf(fp, "{\"WP_Pges\": %lf,\"WP_Wges\": %lf}", power, totalenergy / 1000);
