@@ -9,4 +9,17 @@ add_executable (Middleware "smlreceive.cpp" "smlreceive.h" "ReadMessage.h" "Read
 # TODO: Add tests and install targets if needed.
 target_include_directories(Middleware PRIVATE "/usr/local/include/azureiot"
                     "/usr/local/include/azureiot/inc/")
-                    
+                
+target_link_libraries(Middleware 
+                          serializer
+                          iothub_client
+                          iothub_client_mqtt_transport
+                          umqtt
+                          aziotsharedutil
+                          ssl
+                          crypto
+                          curl
+                          pthread
+                          m
+                          ssl
+                          crypto)
