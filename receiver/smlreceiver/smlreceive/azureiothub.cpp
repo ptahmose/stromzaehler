@@ -61,6 +61,8 @@ const char* notFound = "\"No method found\"";
 static const char* EVENT_SUCCESS = "success";
 static const char* EVENT_FAILED = "failed";
 
+static int interval = INTERVAL;
+
 static void start()
 {
     //sendingMessage = true;
