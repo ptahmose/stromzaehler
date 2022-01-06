@@ -178,7 +178,7 @@ IOTHUBMESSAGE_DISPOSITION_RESULT receiveMessageCallback(IOTHUB_MESSAGE_HANDLE me
         return IOTHUBMESSAGE_ABANDONED;
     }
 
-    strncpy(temp, buffer, size);
+    strncpy(temp, (const char*)buffer, size);
     temp[size] = '\0';
 
     (void)printf("Receiving message: %s\r\n", temp);
