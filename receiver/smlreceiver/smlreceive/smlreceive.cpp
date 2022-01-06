@@ -17,7 +17,9 @@ static void WriteValues(double power, double totalenergy)
 	FILE* fp = fopen("/mnt/RAMDisk/zaehlerdata/stromzaehler.txt", "wb");
 	if (fp != NULL)
 	{
+		int r = flock(fileno(fp), LOCK_EX);
 		fprintf(fp, "{\"WP_Pges\": %lf,\"WP_Wges\": %lf}", power, totalenergy / 1000);
+		flock(fileno(fp), LOCK_UN);
 		fclose(fp);
 	}
 }
