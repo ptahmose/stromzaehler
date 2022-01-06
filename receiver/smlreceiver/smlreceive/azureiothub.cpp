@@ -11,6 +11,7 @@
 
 #include "azureiothub.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 static char* get_device_id(const char* str)
 {
@@ -38,7 +39,9 @@ char* parse_iothub_name(const char* connectionString)
         return NULL;
     }
 
-    const char* hostName = strtok(connectionString, ".");
+    char* cs = strdup(connectionString);
+
+    char* hostName = strtok(cs, ".");
     int prefixLen = strlen("HostName=");
     int len = strlen(hostName) - prefixLen + 1;
     char* iotHubName = (char*)malloc(len);
@@ -48,6 +51,7 @@ char* parse_iothub_name(const char* connectionString)
     }
     memcpy(iotHubName, hostName + prefixLen, len - 1);
     iotHubName[len - 1] = '\0';
+    free(cs);
     return iotHubName;
 }
 
