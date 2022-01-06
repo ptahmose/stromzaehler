@@ -56,6 +56,8 @@ char* parse_iothub_name(const char* connectionString)
 }
 
 
+#define INTERVAL 2000
+
 const char* onSuccess = "\"Successfully invoke device method\"";
 const char* notFound = "\"No method found\"";
 static const char* EVENT_SUCCESS = "success";
