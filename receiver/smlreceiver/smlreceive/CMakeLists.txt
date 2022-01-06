@@ -11,7 +11,7 @@ target_include_directories(Middleware PRIVATE "/usr/local/include/azureiot"
                     "/usr/local/include/azureiot/inc/")
                 
 target_link_libraries(Middleware 
-                          /usr/local/lib/libparson.a
+                          parson
                           serializer
                           iothub_client
                           iothub_client_mqtt_transport
