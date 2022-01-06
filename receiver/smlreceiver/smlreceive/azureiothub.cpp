@@ -205,7 +205,7 @@ static void sendCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* userCon
 
 static void sendMessages(IOTHUB_CLIENT_LL_HANDLE iotHubClientHandle, char* buffer)
 {
-	IOTHUB_MESSAGE_HANDLE messageHandle = IoTHubMessage_CreateFromByteArray(buffer, strlen(buffer));
+	IOTHUB_MESSAGE_HANDLE messageHandle = IoTHubMessage_CreateFromByteArray((const unsigned char*)buffer, strlen(buffer));
 	if (messageHandle == NULL)
 	{
 		fprintf(stderr, "Unable to create a new IoTHubMessage\n");
