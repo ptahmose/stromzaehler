@@ -136,7 +136,7 @@ while True:
     print(responseHex)
     #print(str(counter))
      #print(text)
-    time.sleep(0.1)
+    time.sleep_ms(10)
     counter=counter+1
     
     

@@ -112,9 +112,8 @@
 						},
 					}]
 				}));
- 
-				// JSON abholen
-				setInterval(function () {
+
+				var getDataAjax = function () {
 					$.ajax({
 						type: "GET",
 						url: "./get_WP_json.php",
@@ -140,7 +139,11 @@
 							document.getElementById("container-TotalEnergy").innerHTML = str_WP_Wges;
 						}
 					});
-				}, 2000);						
+				};
+ 
+				// query json with data periodically, and do the first query immediately
+				setInterval(getDataAjax, 2000);						
+				getDataAjax();
 			</script>			
 		</div>
 	</body>
