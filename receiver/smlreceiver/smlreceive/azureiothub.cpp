@@ -12,9 +12,9 @@
 #include "azureiothub.h"
 #include <stdlib.h>
 
-static char* get_device_id(char* str)
+static char* get_device_id(const char* str)
 {
-    char* substr = strstr(str, "DeviceId=");
+    const char* substr = strstr(str, "DeviceId=");
 
     if (substr == NULL)
         return NULL;
@@ -22,9 +22,9 @@ static char* get_device_id(char* str)
     // skip "DeviceId="
     substr += 9;
 
-    char* semicolon = strstr(substr, ";");
+    const char* semicolon = strstr(substr, ";");
     int length = semicolon == NULL ? strlen(substr) : semicolon - substr;
-    char* device_id = calloc(1, length + 1);
+    char* device_id = (char*)calloc(1, length + 1);
     memcpy(device_id, substr, length);
     device_id[length] = '\0';
 
@@ -34,7 +34,7 @@ static char* get_device_id(char* str)
 CAzureIot::CAzureIot(const std::string& connectionString)
 {
     char device_id[257];
-    char* device_id_src = get_device_id(argv[1]);
+    char* device_id_src = get_device_id(connectionString.c_str());
 
     if (device_id_src == NULL)
     {
