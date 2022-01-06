@@ -65,6 +65,22 @@ static const char* EVENT_FAILED = "failed";
 
 static int interval = INTERVAL;
 
+void* send_telemetry_data_multi_thread(char* iotHubName, const char* eventName, const char* message)
+{
+    AIParams* params = (AIParams*)malloc(sizeof(AIParams));
+    if (params != NULL)
+    {
+        params->iotHubName = iotHubName;
+        params->event = eventName;
+        params->message = message;
+        pthread_create(&thread, NULL, send_ai, (void*)params);
+    }
+    else
+    {
+        free(iotHubName);
+    }
+}
+
 static void start()
 {
     //sendingMessage = true;
@@ -195,14 +211,14 @@ void CAzureIot::Run()
 
     if (platform_init() != 0)
     {
-        printf(stderr,"Failed to initialize the platform.\n");
+        fprintf(stderr,"Failed to initialize the platform.\n");
         exit(1);
     }
     else
     {
         if ((iotHubClientHandle = IoTHubClient_LL_CreateFromConnectionString(this->connectionstring.c_str(), MQTT_Protocol)) == NULL)
         {
-            printf(stderr, "iotHubClientHandle is NULL!\n");
+            fprintf(stderr, "iotHubClientHandle is NULL!\n");
             exit(1);// send_telemetry_data(NULL, EVENT_FAILED, "Cannot create iotHubClientHandle");
         }
         else
