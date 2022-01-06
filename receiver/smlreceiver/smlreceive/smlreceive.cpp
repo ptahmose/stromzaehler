@@ -97,6 +97,11 @@ static void run_iot(const char* connectionString)
 
 				if (bTotalEnergyOk == true && bPowerOk)
 				{
+					WriteValues(power, totalenergy);
+				}
+
+				if (bPowerOk)
+				{
 					stringstream str{};
 					str << "{ \"Power\": " << power << " }";
 					data = str.str();
