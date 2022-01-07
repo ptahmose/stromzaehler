@@ -14,6 +14,8 @@ bool CCmdLineOpts::Parse(int argc, char** argv)
 	options.add_options()
 		("f,write-to-file", "Write out the current values to the specified file (with flock)", cxxopts::value<std::string>())
 		("r,rest-http-url", "URL for http-call (can be given multiple times)", cxxopts::value<std::vector<std::string>>())
+		("u,user", "user (for http-connect, can be given multiple times)", cxxopts::value < std::vector<std::string>>())
+		("p,password", "password (for http-connect, can be given multiple times)", cxxopts::value < std::vector<std::string>>())
 		("v,verbose", "Verbose output", cxxopts::value<bool>()->default_value("false"))
 		("h,help", "Print usage")
 		;
@@ -34,6 +36,16 @@ bool CCmdLineOpts::Parse(int argc, char** argv)
 	if (result.count("rest-http-url"))
 	{
 		this->restHttpUrls = result["rest-http-url"].as<std::vector<std::string>>();
+	}
+
+	if (result.count("user"))
+	{
+		this->users = result["user"].as<std::vector<std::string>>();
+	}
+
+	if (result.count("password"))
+	{
+		this->passwords = result["password"].as<std::vector<std::string>>();
 	}
 
 	if (result.count("write-to-file"))

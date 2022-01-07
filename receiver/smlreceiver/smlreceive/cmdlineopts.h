@@ -8,6 +8,8 @@ class CCmdLineOpts
 private:
 	std::string filetowrite;
 	std::vector<std::string> restHttpUrls;
+	std::vector<std::string> users;
+	std::vector<std::string> passwords;
 	bool	verbose;
 
 public:

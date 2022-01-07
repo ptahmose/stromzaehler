@@ -17,14 +17,23 @@
 using namespace std;
 using namespace std::chrono;
 
-static void WriteValues(double power, double totalenergy)
+static void WriteValues(const string& filename, double power, double totalenergy)
 {
 	//FILE* fp = fopen("/tmp/stromzaehler.txt", "wb");
-	FILE* fp = fopen("/mnt/RAMDisk/zaehlerdata/stromzaehler.txt", "wb");
+	//FILE* fp = fopen("/mnt/RAMDisk/zaehlerdata/stromzaehler.txt", "wb");
+	FILE* fp = fopen(filename.c_str(), "ab");
 	if (fp != NULL)
 	{
-		int r = flock(fileno(fp), LOCK_EX);
+		// Note: We open the file in "append"-mode (not "truncate", which would be 'w'), we 
+		//        try to be cautious that we first get the lock, and then modify the file. To my
+		//        understanding, with "w" it will be truncated (before getting the lock!).
+		int r = flock(_fileno(fp), LOCK_EX);
+		rewind(fp);
 		fprintf(fp, "{\"WP_Pges\": %lf,\"WP_Wges\": %lf}", power, totalenergy / 1000);
+		fflush(fp);
+		auto length = ftell(fp);
+		off_t offset = length;
+		ftruncate(_fileno(fp), offset);
 		flock(fileno(fp), LOCK_UN);
 		fclose(fp);
 	}
@@ -177,56 +186,77 @@ int main(int argc, char** argv)
 			int r = readMsg.ReadMessage(msg);
 			uint16_t crc = calculate_crc(msg);
 
-			printf("crc: %04X (from msg: %04X) : %s\n", crc, msg.GetCrc(), (crc == msg.GetCrc()) ? "OK" : "FAIL");
-			if (crc != msg.GetCrc())
+			if (opts.IsVerbose())
+			{
+				printf("crc: %04X (from msg: %04X) : %s\n", crc, msg.GetCrc(), (crc == msg.GetCrc()) ? "OK" : "FAIL");
+			}
+
+			bool crcCorrect = crc == msg.GetCrc();
+			if (!crcCorrect)
 			{
 				*msg.data = 0x1b;
 				crc = calculate_crc(msg);
 				if (crc == msg.GetCrc())
 				{
-					printf("After correction -> OK\n");
+					crcCorrect = true;
+					if (opts.IsVerbose())
+					{
+						printf("After correction -> OK\n");
+					}
 				}
 			}
 
-			if (crc == msg.GetCrc())
+			if (crcCorrect)
 			{
 				double power;
 				bool bPowerOk = msg.TryGetEffectivePowerInWatts(&power);
-				if (!bPowerOk)
+				if (opts.IsVerbose())
 				{
-					printf("Effective Power : <not present>");
-				}
-				else
-				{
-					printf("Effective Power : %.1lf Watt\n", power);
+					if (!bPowerOk)
+					{
+						printf("Effective Power : <not present>\n");
+					}
+					else
+					{
+						printf("Effective Power : %.1lf Watt\n", power);
+					}
 				}
 
 				double totalenergy;
 				bool bTotalEnergyOk = msg.TryGetTotalEnergyInWattHours(&totalenergy);
-				if (!bTotalEnergyOk)
+				if (opts.IsVerbose())
 				{
-					printf("Total Energy: <not present>");
-				}
-				else
-				{
-					printf("Total Energy: %.1lf Watt*hour\n", totalenergy);
+					if (!bTotalEnergyOk)
+					{
+						printf("Total Energy: <not present>\n");
+					}
+					else
+					{
+						printf("Total Energy: %.1lf Watt*hour\n", totalenergy);
+					}
 				}
 
 				if (bTotalEnergyOk == true && bPowerOk)
 				{
-					WriteValues(power, totalenergy);
+					if (!opts.GetFileToWrite().empty())
+					{
+						WriteValues(opts.GetFileToWrite(), power, totalenergy);
+					}
 				}
 
 				if (bPowerOk)
 				{
-					SendToVolkszaehler(power);
+					if (!opts.GetRestHttpsUrls().empty())
+					{
+						SendToVolkszaehler(power);
+					}
 				}
 			}
 
-			for (size_t i = 0; i < msg.size; ++i)
+			/*for (size_t i = 0; i < msg.size; ++i)
 			{
 				printf("0x%02X", msg.data[i]);
-			}
+			}*/
 
 			printf("\n");
 		}
