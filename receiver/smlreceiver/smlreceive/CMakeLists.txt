@@ -14,7 +14,7 @@ if(NOT cxxopts_POPULATED)
 endif()
 
 # Add source to this project's executable.
-add_executable (Middleware "smlreceive.cpp" "smlreceive.h" "ReadMessage.h" "ReadMessage.cpp" "utils.h" "utils.cpp" "azureiothub.cpp" "azureiothub.h")
+add_executable (Middleware "smlreceive.cpp" "smlreceive.h" "ReadMessage.h" "ReadMessage.cpp" "utils.h" "utils.cpp" "azureiothub.cpp" "azureiothub.h" "cmdlineopts.cpp")
 
 # TODO: Add tests and install targets if needed.
 target_include_directories(Middleware PRIVATE "/usr/local/include/azureiot"

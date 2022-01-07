@@ -12,7 +12,7 @@
 #include "azureiothub.h"
 #include <sstream>
 #include <chrono>
-#include <cxxopts.hpp>
+#include "cmdlineopts.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -137,6 +137,16 @@ void SendToVolkszaehler(double d)
 
 int main(int argc, char** argv)
 {
+	CCmdLineOpts opts;
+	opts.Parse(argc, argv);
+
+	for (auto u : opts.GetRestHttpsUrls())
+	{
+		fprintf(stdout, "%s\n", u.c_str());
+	}
+
+	return 0;
+
 	if (argc > 1)
 	{
 		run_iot(argv[1]);
