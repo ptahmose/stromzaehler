@@ -61,6 +61,7 @@ static void WriteValues(const string& filename, double power, double totalenergy
 //	}
 //}
 
+/*
 static void run_iot(const char* connectionString)
 {
 	CReadMessage readMsg("/dev/ttyACM0");
@@ -124,7 +125,7 @@ static void run_iot(const char* connectionString)
 
 			return false;
 		});
-}
+}*/
 
 void SendToVolkszaehler(double d)
 {
@@ -150,117 +151,104 @@ int main(int argc, char** argv)
 	CCmdLineOpts opts;
 	opts.Parse(argc, argv);
 
-	for (auto u : opts.GetRestHttpsUrls())
-	{
-		fprintf(stdout, "%s\n", u.c_str());
-	}
 
-	return 0;
 
-	if (argc > 1)
+	printf("Hello World\n");
+	/*
+	//FILE* fp = fopen("/dev/ttyACM0", "rb");
+	int fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_SYNC);
+	set_blocking(fd, true);
+	for (;;)
 	{
-		run_iot(argv[1]);
-	}
-	else
-	{
-
-		printf("Hello World\n");
-		/*
-		//FILE* fp = fopen("/dev/ttyACM0", "rb");
-		int fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_SYNC);
-		set_blocking(fd, true);
-		for (;;)
+		char c;
+		int n = read(fd, &c, 1);
+		if (n > 0)
 		{
-			char c;
-			int n = read(fd, &c, 1);
-			if (n > 0)
+			fputc(c, stdout);
+		}
+	}
+	*/
+	CReadMessage readMsg("/dev/ttyACM0");
+
+	for (;;)
+	{
+		Message msg;
+		int r = readMsg.ReadMessage(msg);
+		uint16_t crc = calculate_crc(msg);
+
+		if (opts.IsVerbose())
+		{
+			printf("crc: %04X (from msg: %04X) : %s\n", crc, msg.GetCrc(), (crc == msg.GetCrc()) ? "OK" : "FAIL");
+		}
+
+		bool crcCorrect = crc == msg.GetCrc();
+		if (!crcCorrect)
+		{
+			*msg.data = 0x1b;
+			crc = calculate_crc(msg);
+			if (crc == msg.GetCrc())
 			{
-				fputc(c, stdout);
+				crcCorrect = true;
+				if (opts.IsVerbose())
+				{
+					printf("After correction -> OK\n");
+				}
 			}
 		}
-		*/
-		CReadMessage readMsg("/dev/ttyACM0");
 
-		for (;;)
+		if (crcCorrect)
 		{
-			Message msg;
-			int r = readMsg.ReadMessage(msg);
-			uint16_t crc = calculate_crc(msg);
-
+			double power;
+			bool bPowerOk = msg.TryGetEffectivePowerInWatts(&power);
 			if (opts.IsVerbose())
 			{
-				printf("crc: %04X (from msg: %04X) : %s\n", crc, msg.GetCrc(), (crc == msg.GetCrc()) ? "OK" : "FAIL");
-			}
-
-			bool crcCorrect = crc == msg.GetCrc();
-			if (!crcCorrect)
-			{
-				*msg.data = 0x1b;
-				crc = calculate_crc(msg);
-				if (crc == msg.GetCrc())
+				if (!bPowerOk)
 				{
-					crcCorrect = true;
-					if (opts.IsVerbose())
-					{
-						printf("After correction -> OK\n");
-					}
+					printf("Effective Power : <not present>\n");
+				}
+				else
+				{
+					printf("Effective Power : %.1lf Watt\n", power);
 				}
 			}
 
-			if (crcCorrect)
+			double totalenergy;
+			bool bTotalEnergyOk = msg.TryGetTotalEnergyInWattHours(&totalenergy);
+			if (opts.IsVerbose())
 			{
-				double power;
-				bool bPowerOk = msg.TryGetEffectivePowerInWatts(&power);
-				if (opts.IsVerbose())
+				if (!bTotalEnergyOk)
 				{
-					if (!bPowerOk)
-					{
-						printf("Effective Power : <not present>\n");
-					}
-					else
-					{
-						printf("Effective Power : %.1lf Watt\n", power);
-					}
+					printf("Total Energy: <not present>\n");
 				}
-
-				double totalenergy;
-				bool bTotalEnergyOk = msg.TryGetTotalEnergyInWattHours(&totalenergy);
-				if (opts.IsVerbose())
+				else
 				{
-					if (!bTotalEnergyOk)
-					{
-						printf("Total Energy: <not present>\n");
-					}
-					else
-					{
-						printf("Total Energy: %.1lf Watt*hour\n", totalenergy);
-					}
-				}
-
-				if (bTotalEnergyOk == true && bPowerOk)
-				{
-					if (!opts.GetFileToWrite().empty())
-					{
-						WriteValues(opts.GetFileToWrite(), power, totalenergy);
-					}
-				}
-
-				if (bPowerOk)
-				{
-					if (!opts.GetRestHttpsUrls().empty())
-					{
-						SendToVolkszaehler(power);
-					}
+					printf("Total Energy: %.1lf Watt*hour\n", totalenergy);
 				}
 			}
 
-			/*for (size_t i = 0; i < msg.size; ++i)
+			if (bTotalEnergyOk == true && bPowerOk)
 			{
-				printf("0x%02X", msg.data[i]);
-			}*/
+				if (!opts.GetFileToWrite().empty())
+				{
+					WriteValues(opts.GetFileToWrite(), power, totalenergy);
+				}
+			}
 
-			printf("\n");
+			if (bPowerOk)
+			{
+				if (!opts.GetRestHttpsUrls().empty())
+				{
+					SendToVolkszaehler(power);
+				}
+			}
 		}
+
+		/*for (size_t i = 0; i < msg.size; ++i)
+		{
+			printf("0x%02X", msg.data[i]);
+		}*/
+
+		printf("\n");
 	}
 
 	return 0;
