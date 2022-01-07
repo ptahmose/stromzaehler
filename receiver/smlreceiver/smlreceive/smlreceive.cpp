@@ -120,11 +120,12 @@ void SendToVolkszaehler(double d)
 	milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 	stringstream ss;
 	ss << "wget - O - -q \"https://demo.volkszaehler.org/middleware/data/";
-	ss << "96019cb0-6fa4-11ec-b29a-a7af5fc93369";
+	ss << "67165e80-6fa9-11ec-9134-017bf40382af";
 	ss << ".json?operation=add&ts=" << ms.count();
 	ss << "&value=" << d << "\"";
 
 	fprintf(stdout, "%s\n", ss.str().c_str());
+	system(ss.str().c_str());
 }
 
 int main(int argc, char** argv)
