@@ -22,7 +22,6 @@ target_include_directories(Middleware PRIVATE "/usr/local/include/azureiot"
                     ${cxxopts_SOURCE_DIR}/include)
                 
 target_link_libraries(Middleware 
-                          cxxopt
                           serializer
                           iothub_client
                           iothub_client_mqtt_transport
