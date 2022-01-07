@@ -12,6 +12,7 @@
 #include "azureiothub.h"
 #include <sstream>
 #include <chrono>
+#include <cxxopts.hpp>
 
 using namespace std;
 using namespace std::chrono;

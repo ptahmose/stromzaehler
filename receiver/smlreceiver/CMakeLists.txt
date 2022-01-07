@@ -5,5 +5,9 @@ cmake_minimum_required (VERSION 3.8)
 
 project ("smlreceiver")
 
+message(STATUS "Fetching cxxopts")
+FetchContent_Declare(cxxopts URL https://github.com/jarro2783/cxxopts/archive/refs/tags/v3.0.0.zip)
+FetchContent_MakeAvailable(cxxopts)
+
 # Include sub-projects.
 add_subdirectory ("smlreceive")
