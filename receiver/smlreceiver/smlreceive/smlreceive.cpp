@@ -11,8 +11,10 @@
 #include <sys/file.h>
 #include "azureiothub.h"
 #include <sstream>
+#include <chrono>
 
 using namespace std;
+using namespace std::chrono;
 
 static void WriteValues(double power, double totalenergy)
 {
@@ -113,6 +115,18 @@ static void run_iot(const char* connectionString)
 		});
 }
 
+void SendToVolkszaehler(double d)
+{
+	milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+	stringstream ss;
+	ss << "wget - O - -q \"https://demo.volkszaehler.org/middleware/data/";
+	ss << "96019cb0-6fa4-11ec-b29a-a7af5fc93369";
+	ss << ".json?operation=add&ts=" << ms.count();
+	ss << "&value=" << d << "\"";
+
+	fprintf(stdout, "%s\n", ss.str().c_str());
+}
+
 int main(int argc, char** argv)
 {
 	if (argc > 1)
@@ -183,6 +197,11 @@ int main(int argc, char** argv)
 				if (bTotalEnergyOk == true && bPowerOk)
 				{
 					WriteValues(power, totalenergy);
+				}
+
+				if (bPowerOk)
+				{
+					SendToVolkszaehler();
 				}
 			}
 
