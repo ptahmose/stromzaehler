@@ -7,8 +7,5 @@ project ("smlreceiver")
 
 include(FetchContent)
 
-message(STATUS "Fetching cxxopts")
-FetchContent_Declare(cxxopts URL https://github.com/jarro2783/cxxopts/archive/refs/tags/v3.0.0.zip)
-
 # Include sub-projects.
 add_subdirectory ("smlreceive")
