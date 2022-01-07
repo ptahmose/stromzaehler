@@ -124,6 +124,12 @@ void SendToVolkszaehler(double d)
 	ss << ".json?operation=add&ts=" << ms.count();
 	ss << "&value=" << d << "\"";
 
+
+	ss << "; wget - O - -q \"https://vz.nanox.de/middleware/data/";
+	ss << "6a74cb20-6faa-11ec-a96c-1f3bc4c22881";
+	ss << ".json?operation=add&ts=" << ms.count();
+	ss << "&value=" << d << "\"";
+
 	fprintf(stdout, "%s\n", ss.str().c_str());
 	system(ss.str().c_str());
 }
