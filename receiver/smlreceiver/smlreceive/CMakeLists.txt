@@ -3,6 +3,11 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
+if(NOT cxxopts_POPULATED)
+    FetchContent_Populate(cxxopts)
+    add_subdirectory(${cxxopts_SOURCE_DIR} ${cxxopts_BINARY_DIR})
+endif()
+
 # Add source to this project's executable.
 add_executable (Middleware "smlreceive.cpp" "smlreceive.h" "ReadMessage.h" "ReadMessage.cpp" "utils.h" "utils.cpp" "azureiothub.cpp" "azureiothub.h")
 
