@@ -119,13 +119,13 @@ void SendToVolkszaehler(double d)
 {
 	milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 	stringstream ss;
-	ss << "wget - O - -q \"https://demo.volkszaehler.org/middleware/data/";
+	ss << "wget -O - -q \"https://demo.volkszaehler.org/middleware/data/";
 	ss << "67165e80-6fa9-11ec-9134-017bf40382af";
 	ss << ".json?operation=add&ts=" << ms.count();
 	ss << "&value=" << d << "\"";
 
 
-	ss << "; wget - O - -q \"https://vz.nanox.de/middleware/data/";
+	ss << "; wget -O - -q \"https://vz.nanox.de/middleware/data/";
 	ss << "6a74cb20-6faa-11ec-a96c-1f3bc4c22881";
 	ss << ".json?operation=add&ts=" << ms.count();
 	ss << "&value=" << d << "\"";
