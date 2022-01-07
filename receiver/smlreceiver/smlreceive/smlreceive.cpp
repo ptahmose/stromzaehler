@@ -201,7 +201,7 @@ int main(int argc, char** argv)
 
 				if (bPowerOk)
 				{
-					SendToVolkszaehler();
+					SendToVolkszaehler(power);
 				}
 			}
 
