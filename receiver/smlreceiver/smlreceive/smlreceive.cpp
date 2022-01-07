@@ -9,6 +9,7 @@
 #include "ReadMessage.h"
 #include "utils.h"
 #include <sys/file.h>
+#include <unistd.h>
 #include "azureiothub.h"
 #include <sstream>
 #include <chrono>
@@ -27,13 +28,13 @@ static void WriteValues(const string& filename, double power, double totalenergy
 		// Note: We open the file in "append"-mode (not "truncate", which would be 'w'), we 
 		//        try to be cautious that we first get the lock, and then modify the file. To my
 		//        understanding, with "w" it will be truncated (before getting the lock!).
-		int r = flock(_fileno(fp), LOCK_EX);
+		int r = flock(fileno(fp), LOCK_EX);
 		rewind(fp);
 		fprintf(fp, "{\"WP_Pges\": %lf,\"WP_Wges\": %lf}", power, totalenergy / 1000);
 		fflush(fp);
 		auto length = ftell(fp);
 		off_t offset = length;
-		ftruncate(_fileno(fp), offset);
+		ftruncate(fileno(fp), offset);
 		flock(fileno(fp), LOCK_UN);
 		fclose(fp);
 	}
