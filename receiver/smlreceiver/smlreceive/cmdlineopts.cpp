@@ -1,6 +1,12 @@
 #include <cxxopts.hpp>
 #include "cmdlineopts.h"
 
+CCmdLineOpts::CCmdLineOpts()
+	: verbose(false)
+{
+
+}
+
 bool CCmdLineOpts::Parse(int argc, char** argv)
 {
 	cxxopts::Options options("smreceive", "get data from power-meter and distribute it");
