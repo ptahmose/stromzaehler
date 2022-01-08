@@ -127,9 +127,53 @@ static void run_iot(const char* connectionString)
 		});
 }*/
 
-void SendToVolkszaehler(double d)
+static string GenerateShellCommand(const std::string& url, const std::string& user, const std::string& password, long long timestamp, double value)
+{
+	stringstream ss;
+	ss << "wget - O - -q ";
+	if (!user.empty())
+	{
+		ss << "--user " << user << " --password " << password << " ";
+	}
+
+	ss << "\""<<url<<".json?operation=add&ts="<<timestamp<< "&value=" << value << "\"";
+
+	return ss.str();
+}
+
+void SendToVolkszaehler(
+		const std::vector<std::string>& urls,
+		const std::vector<std::string>& users,
+		const std::vector<std::string>& passwords,
+		double d)
 {
 	milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+
+	stringstream ss;
+	for (size_t i = 0; i < urls.size(); ++i)
+	{
+		string cmd = GenerateShellCommand(
+			urls[i],
+			i < users.size() ? users[i] : "",
+			i < passwords.size() ? passwords[i] : "",
+			ms.count(),
+			d);
+
+		if (i > 0)
+		{
+			ss << " ; ";
+		}
+
+		ss << cmd;
+	}
+
+	if (!ss.str().empty())
+	{
+		fprintf(stdout, "%s\n", ss.str().c_str());
+		//system(ss.str().c_str());
+	}
+
+/*	milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 	stringstream ss;
 	ss << "wget -O - -q \"https://demo.volkszaehler.org/middleware/data/";
 	ss << "67165e80-6fa9-11ec-9134-017bf40382af";
@@ -143,7 +187,7 @@ void SendToVolkszaehler(double d)
 	ss << "&value=" << d << "\"";
 
 	fprintf(stdout, "%s\n", ss.str().c_str());
-	system(ss.str().c_str());
+	system(ss.str().c_str());*/
 }
 
 int main(int argc, char** argv)
@@ -151,6 +195,20 @@ int main(int argc, char** argv)
 	CCmdLineOpts opts;
 	opts.Parse(argc, argv);
 
+	for (auto s : opts.GetRestHttpsUrls())
+	{
+		fputs(s.c_str());
+	}
+
+	for (auto s : opts.GetRestHttpsUsers())
+	{
+		fputs(s.c_str());
+	}
+
+	for (auto s : opts.GetRestHttpsPasswords())
+	{
+		fputs(s.c_str());
+	}
 
 
 	printf("Hello World\n");
@@ -238,7 +296,7 @@ int main(int argc, char** argv)
 			{
 				if (!opts.GetRestHttpsUrls().empty())
 				{
-					SendToVolkszaehler(power);
+					SendToVolkszaehler(opts.GetRestHttpsUrls(),opts.GetRestHttpsUsers(),opts.GetRestHttpsPasswords(), power);
 				}
 			}
 		}

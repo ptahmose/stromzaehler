@@ -19,5 +19,7 @@ public:
 
 	const std::string& GetFileToWrite() const { return this->filetowrite; }
 	const std::vector<std::string>& GetRestHttpsUrls() const { return this->restHttpUrls; }
+	const std::vector<std::string>& GetRestHttpsUsers() const { return this->users; }
+	const std::vector<std::string>& GetRestHttpsPasswords() const { return this->passwords; }
 	bool IsVerbose() const { return this->verbose; }
 };
