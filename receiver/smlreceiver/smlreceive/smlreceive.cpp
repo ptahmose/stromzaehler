@@ -29,7 +29,7 @@ static void WriteValues(const string& filename, double power, double totalenergy
 		//        try to be cautious that we first get the lock, and then modify the file. To my
 		//        understanding, with "w" it will be truncated (before getting the lock!).
 		int r = flock(fileno(fp), LOCK_EX);
-		rewind(fp);
+		fseek(fp,0,SEEK_SET);
 		fprintf(fp, "{\"WP_Pges\": %lf,\"WP_Wges\": %lf}", power, totalenergy / 1000);
 		fflush(fp);
 		auto length = ftell(fp);
