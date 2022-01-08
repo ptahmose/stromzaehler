@@ -21,16 +21,20 @@ using namespace std::chrono;
 
 static void WriteValues(const string& filename, double power, double totalenergy)
 {
-	int fd = open(filename.c_str(), O_WRONLY| O_CREAT);
+	// Note: We use 'open' (instead of fopen etc.) here on purpose, because we 
+	//       try to be cautious that we first get the lock, and then modify the file. To my
+	//       understanding, with fopen and "w" it will be truncated (before getting the lock!).
+	int fd = open(filename.c_str(), O_WRONLY | O_CREAT);
 	if (fd >= 0)
 	{
 		stringstream ss;
 		ss << setprecision(5) << "{\"WP_Pges\":" << power << ",\"WP_Wges\":" << totalenergy / 1000.0 << "}";
 		string string = ss.str();
+		auto size_string = string.size();
 		flock(fd, LOCK_EX);
 		lseek(fd, 0, SEEK_SET);
-		write(fd, string.c_str(), string.size());
-		ftruncate(fd, string.size());
+		write(fd, string.c_str(), size_string);
+		ftruncate(fd, size_string);
 		flock(fd, LOCK_UN);
 		close(fd);
 	}
@@ -40,7 +44,7 @@ static void WriteValues(const string& filename, double power, double totalenergy
 	/*FILE* fp = fopen(filename.c_str(), "ab");
 	if (fp != NULL)
 	{
-		// Note: We open the file in "append"-mode (not "truncate", which would be 'w'), we 
+		// Note: We open the file in "append"-mode (not "truncate", which would be 'w'), we
 		//        try to be cautious that we first get the lock, and then modify the file. To my
 		//        understanding, with "w" it will be truncated (before getting the lock!).
 		int r = flock(fileno(fp), LOCK_EX);
@@ -151,16 +155,16 @@ static string GenerateShellCommand(const std::string& url, const std::string& us
 		ss << "--user " << user << " --password " << password << " ";
 	}
 
-	ss << "\""<<url<<".json?operation=add&ts="<<timestamp<< "&value=" << value << "\"";
+	ss << "\"" << url << ".json?operation=add&ts=" << timestamp << "&value=" << value << "\"";
 
 	return ss.str();
 }
 
 void SendToVolkszaehler(
-		const std::vector<std::string>& urls,
-		const std::vector<std::string>& users,
-		const std::vector<std::string>& passwords,
-		double d)
+	const std::vector<std::string>& urls,
+	const std::vector<std::string>& users,
+	const std::vector<std::string>& passwords,
+	double d)
 {
 	milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 
@@ -188,21 +192,21 @@ void SendToVolkszaehler(
 		//system(ss.str().c_str());
 	}
 
-/*	milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-	stringstream ss;
-	ss << "wget -O - -q \"https://demo.volkszaehler.org/middleware/data/";
-	ss << "67165e80-6fa9-11ec-9134-017bf40382af";
-	ss << ".json?operation=add&ts=" << ms.count();
-	ss << "&value=" << d << "\"";
+	/*	milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+		stringstream ss;
+		ss << "wget -O - -q \"https://demo.volkszaehler.org/middleware/data/";
+		ss << "67165e80-6fa9-11ec-9134-017bf40382af";
+		ss << ".json?operation=add&ts=" << ms.count();
+		ss << "&value=" << d << "\"";
 
 
-	ss << "; wget -O - -q \"https://vz.nanox.de/middleware/data/";
-	ss << "6a74cb20-6faa-11ec-a96c-1f3bc4c22881";
-	ss << ".json?operation=add&ts=" << ms.count();
-	ss << "&value=" << d << "\"";
+		ss << "; wget -O - -q \"https://vz.nanox.de/middleware/data/";
+		ss << "6a74cb20-6faa-11ec-a96c-1f3bc4c22881";
+		ss << ".json?operation=add&ts=" << ms.count();
+		ss << "&value=" << d << "\"";
 
-	fprintf(stdout, "%s\n", ss.str().c_str());
-	system(ss.str().c_str());*/
+		fprintf(stdout, "%s\n", ss.str().c_str());
+		system(ss.str().c_str());*/
 }
 
 int main(int argc, char** argv)
@@ -212,17 +216,17 @@ int main(int argc, char** argv)
 
 	for (auto s : opts.GetRestHttpsUrls())
 	{
-		fprintf(stdout,"URL: %s\n",s.c_str());
+		fprintf(stdout, "URL: %s\n", s.c_str());
 	}
 
 	for (auto s : opts.GetRestHttpsUsers())
 	{
-		fprintf(stdout,"USER: %s\n",s.c_str());
+		fprintf(stdout, "USER: %s\n", s.c_str());
 	}
 
 	for (auto s : opts.GetRestHttpsPasswords())
 	{
-		fprintf(stdout,"Password: %s\n",s.c_str());
+		fprintf(stdout, "Password: %s\n", s.c_str());
 	}
 
 
@@ -311,7 +315,7 @@ int main(int argc, char** argv)
 			{
 				if (!opts.GetRestHttpsUrls().empty())
 				{
-					SendToVolkszaehler(opts.GetRestHttpsUrls(),opts.GetRestHttpsUsers(),opts.GetRestHttpsPasswords(), power);
+					SendToVolkszaehler(opts.GetRestHttpsUrls(), opts.GetRestHttpsUsers(), opts.GetRestHttpsPasswords(), power);
 				}
 			}
 		}
