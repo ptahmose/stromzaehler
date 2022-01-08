@@ -188,8 +188,8 @@ void SendToVolkszaehler(
 
 	if (!ss.str().empty())
 	{
-		fprintf(stdout, "%s\n", ss.str().c_str());
-		//system(ss.str().c_str());
+		//fprintf(stdout, "%s\n", ss.str().c_str());
+		system(ss.str().c_str());
 	}
 
 	/*	milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
@@ -214,7 +214,7 @@ int main(int argc, char** argv)
 	CCmdLineOpts opts;
 	opts.Parse(argc, argv);
 
-	for (auto s : opts.GetRestHttpsUrls())
+	/*for (auto s : opts.GetRestHttpsUrls())
 	{
 		fprintf(stdout, "URL: %s\n", s.c_str());
 	}
@@ -230,7 +230,7 @@ int main(int argc, char** argv)
 	}
 
 
-	printf("Hello World\n");
+	printf("Hello World\n");*/
 	/*
 	//FILE* fp = fopen("/dev/ttyACM0", "rb");
 	int fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_SYNC);
