@@ -26,12 +26,12 @@ static void WriteValues(const string& filename, double power, double totalenergy
 		stringstream ss;
 		ss << "{\"WP_Pges\":" << power << "\"WP_Wges\":" << totalenergy / 1000 << "}";
 		string string = ss.str();
-		flock(fp, LOCK_EX);
-		lseek(fp, 0, SEEK_SET);
-		write(fp, string.c_str(), string.size());
-		fruncate(fp, string.size());
-		flock(fp, LOCK_UN);
-		close(fp);
+		flock(fd, LOCK_EX);
+		lseek(fd, 0, SEEK_SET);
+		write(fd, string.c_str(), string.size());
+		ftruncate(fd, string.size());
+		flock(fd, LOCK_UN);
+		close(fd);
 	}
 
 	//FILE* fp = fopen("/tmp/stromzaehler.txt", "wb");
