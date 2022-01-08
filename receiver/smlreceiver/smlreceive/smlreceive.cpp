@@ -20,9 +20,23 @@ using namespace std::chrono;
 
 static void WriteValues(const string& filename, double power, double totalenergy)
 {
+	int fd = open(filename.c_str(), O_WRONLY| O_CREAT);
+	if (fd >= 0)
+	{
+		stringstream ss;
+		ss << "{\"WP_Pges\":" << power << "\"WP_Wges\":" << totalenergy / 1000 << "}";
+		string string = ss.str();
+		flock(fp, LOCK_EX);
+		lseek(fp, 0, SEEK_SET);
+		write(fp, string.c_str(), string.size());
+		fruncate(fp, string.size());
+		flock(fp, LOCK_UN);
+		close(fp);
+	}
+
 	//FILE* fp = fopen("/tmp/stromzaehler.txt", "wb");
 	//FILE* fp = fopen("/mnt/RAMDisk/zaehlerdata/stromzaehler.txt", "wb");
-	FILE* fp = fopen(filename.c_str(), "ab");
+	/*FILE* fp = fopen(filename.c_str(), "ab");
 	if (fp != NULL)
 	{
 		// Note: We open the file in "append"-mode (not "truncate", which would be 'w'), we 
@@ -37,7 +51,7 @@ static void WriteValues(const string& filename, double power, double totalenergy
 		ftruncate(fileno(fp), offset);
 		flock(fileno(fp), LOCK_UN);
 		fclose(fp);
-	}
+	}*/
 }
 
 
