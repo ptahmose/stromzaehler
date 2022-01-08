@@ -28,7 +28,7 @@ static void WriteValues(const string& filename, double power, double totalenergy
 	if (fd >= 0)
 	{
 		stringstream ss;
-		ss << std::setprecision(std::numeric_limits<long double>::digits10 + 1) << "{\"WP_Pges\":" << power << ",\"WP_Wges\":" << (totalenergy / 1000.0) << "}";
+		ss << std::setprecision(std::numeric_limits<long double>::digits10 ) << "{\"WP_Pges\":" << power << ",\"WP_Wges\":" << (totalenergy / 1000.0) << "}";
 		string string = ss.str();
 		auto size_string = string.size();
 		flock(fd, LOCK_EX);
