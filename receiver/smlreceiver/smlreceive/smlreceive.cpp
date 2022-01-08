@@ -24,7 +24,7 @@ static void WriteValues(const string& filename, double power, double totalenergy
 	if (fd >= 0)
 	{
 		stringstream ss;
-		ss << "{\"WP_Pges\":" << power << "\"WP_Wges\":" << totalenergy / 1000 << "}";
+		ss << setprecision(5) << "{\"WP_Pges\":" << power << ",\"WP_Wges\":" << totalenergy / 1000.0 << "}";
 		string string = ss.str();
 		flock(fd, LOCK_EX);
 		lseek(fd, 0, SEEK_SET);
