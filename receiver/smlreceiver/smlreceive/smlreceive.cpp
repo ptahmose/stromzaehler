@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include "azureiothub.h"
 #include <sstream>
+#include <iomanip> 
 #include <chrono>
 #include "cmdlineopts.h"
 
