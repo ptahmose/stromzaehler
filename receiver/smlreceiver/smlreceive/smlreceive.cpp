@@ -197,17 +197,17 @@ int main(int argc, char** argv)
 
 	for (auto s : opts.GetRestHttpsUrls())
 	{
-		fputs(s.c_str(), stdout);
+		fprintf(stdout,"URL: %s\n",s.c_str());
 	}
 
 	for (auto s : opts.GetRestHttpsUsers())
 	{
-		fputs(s.c_str(), stdout);
+		fprintf(stdout,"USER: %s\n",s.c_str());
 	}
 
 	for (auto s : opts.GetRestHttpsPasswords())
 	{
-		fputs(s.c_str(), stdout);
+		fprintf(stdout,"Password: %s\n",s.c_str());
 	}
 
 
