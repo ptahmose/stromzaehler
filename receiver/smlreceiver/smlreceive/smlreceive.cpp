@@ -39,7 +39,7 @@ static void WriteValues(const string& filename, double power, double totalenergy
 static string GenerateShellCommand(const std::string& url, const std::string& user, const std::string& password, long long timestamp, double value)
 {
 	stringstream ss;
-	ss << "wget - O - -q ";
+	ss << "wget -O - -q ";
 	if (!user.empty())
 	{
 		// TODO: we'd need to escape " in the user/password
