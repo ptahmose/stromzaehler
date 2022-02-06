@@ -107,7 +107,7 @@ int main(int argc, char** argv)
 	}
 	*/
 
-	CReadMessage readMsg("/dev/ttyACM0");
+	CReadMessage readMsg("/dev/ttyACM1");
 
 	for (;;)
 	{
