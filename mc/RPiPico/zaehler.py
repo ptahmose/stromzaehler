@@ -102,7 +102,7 @@ def ReadIRMessage():
             data=uart_ir.read()
             response=b''.join([response,data])
         else:
-            deadline = time.ticks_add(time.ticks_ms(),8)
+            deadline = time.ticks_add(time.ticks_ms(),10)
             while time.ticks_diff(deadline,time.ticks_ms()) > 0:
                 if uart_ir.any()>0:
                     break
@@ -110,6 +110,27 @@ def ReadIRMessage():
             if not (uart_ir.any()>0):
                 return response
           
+def ReadIRMessage2():
+    response = bytearray(500)
+    responseLength = 0
+    mv = memoryview(response)
+    while True:
+        if responseLength>=500:
+            return response,responseLength
+        if uart_ir.any()>0:
+            #data=uart_ir.read()
+            #response=b''.join([response,data])
+            responseLength += uart_ir.readinto(mv[responseLength:])
+            #response[responseLength] = uart_ir.read()[0]
+            #responseLength=responseLength+1
+        else:
+            deadline = time.ticks_add(time.ticks_ms(),10)
+            while time.ticks_diff(deadline,time.ticks_ms()) > 0:
+                if uart_ir.any()>0:
+                    break
+                time.sleep_ms(1)
+            if not (uart_ir.any()>0):
+                return response, responseLength          
             
 
 #uart_bt.init(baudrate=9600)
@@ -117,23 +138,20 @@ counter = 0
 
 while True:
     #print("HELLO WORLD")
-    #text = "TESTTEXT #"+str(counter)+"\r\n"
+
     BT_KEY.toggle()
-    #uart_bt.write(text)
-     #uart_ir.write(text)
-#      while True:
-#          if uart_ir.any()>0:
-#              response = uart_ir.read(1)
-#              print(" ".join(hex(n) for n in response))
-#          else:
-#              print("==============================")
-#              break
-    #response = uart_ir.read(2000);
-    response = ReadIRMessage()
-    #responseHex = "".join(hex(n).strip("0x") for n in response)
-    responseHex = "".join(str.format('{:02X}',n) for n in response)
-    uart_bt.write(responseHex+"\n")
-    print(responseHex)
+    
+    #response = ReadIRMessage()
+    #responseHex = "".join(str.format('{:02X}',n) for n in response)
+    response,length = ReadIRMessage2()
+    #print(length)
+    #responseHex = "".join(str.format('{:02X}',n) for n in response[0:length])
+    #uart_bt.write(responseHex+"\n")
+    if length>0:
+        responseHex = "".join(str.format('{:02X}',n) for n in response[0:length])
+        print(responseHex)
+        uart_bt.write(responseHex+"\n")
+    #print(responseHex)
     #print(str(counter))
      #print(text)
     time.sleep_ms(10)
